@@ -5764,7 +5764,7 @@ fitViewport();
 if (window.visualViewport) visualViewport.addEventListener('resize',()=>{ fitViewport(); layout(); });
 addEventListener('resize',()=>{ fitViewport(); layout(); });
 addEventListener('orientationchange',()=>setTimeout(()=>{ fitViewport(); layout(); },250));
-document.addEventListener('touchmove',e=>{ if (e.target.closest && e.target.closest('.scr, #card, #coach .cc, #cdm .cdc')) return; e.preventDefault(); },{passive:false});
+document.addEventListener('touchmove',e=>{ if (e.target.closest && e.target.closest('.scr, #card, #coach .cc, #cdm .cdc, #lx')) return; e.preventDefault(); },{passive:false});
 document.addEventListener('gesturestart',e=>e.preventDefault());
 
 document.body.classList.add('inscr');
