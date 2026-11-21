@@ -6013,14 +6013,27 @@ requestAnimationFrame(tick);
     return {out, ref, refKind};
   }
   // 추천: 이 닉네임으로 판 수가 가장 적은 캐릭터 (기준을 먼저 채움)
+  // 지금 버전과 수치가 같은 예전 버전 (그 캐릭터 기록을 판 수로 같이 셈). 1120부터 지속형 능력 족보 잠금
+  const ALLV=['1114','1119','1120','1121','1121b'], V20=['1120','1121','1121b'], V21=['1121','1121b'];
+  const SAMEV={gardener:ALLV, artisan:ALLV, wall:ALLV, alchemist:ALLV, twins:ALLV, sewer:ALLV, bomber:ALLV, architect:ALLV, seer:ALLV, madan:ALLV,
+    poseidon:['1119','1120','1121','1121b'], mirror:['1114','1119','1121','1121b'],
+    clock:V20, marathon:V20, bounty:V20, joker:V20, explorer:V20, fever:V20, colorblind:V20, runner:V20, zeus:V20, photo:V20, vampire:V20,
+    gambler:V21, navigator:V21, retro:V21, wanderer:V21, arson:['1121b']};
+  const sameVer = g => g.ver===VER || (SAMEV[g.chr]||[]).includes(String(g.ver));
+  // 1120 이후 수치나 규칙이 바뀐 캐릭터 → C 기준을 채운 뒤 먼저 추천
+  const CHANGED=new Set(['clock','marathon','bounty','gambler','joker','navigator','explorer','fever','colorblind','retro','wanderer','runner','zeus','photo','arson','vampire']);
   function recommend(){
-    const mine=games.filter(g=>nickOf(g)===(NICK||'\u0000') && g.ver===VER && !g.aborted);
+    const mine=games.filter(g=>nickOf(g)===(NICK||'\u0000') && sameVer(g) && !g.aborted);
     const cnt={}; for (const g of mine) cnt[g.chr]=(cnt[g.chr]||0)+1;
     const open=LX.filter(c=>!c.lock && c.id!=='none');
     const cMin=Math.min(...C_IDS.map(id=>cnt[id]||0));
     let pool, why;
     if (cMin<2){ pool=open.filter(c=>c.rar==='C' && (cnt[c.id]||0)===cMin); why='점수 배율의 기준(C등급)부터 채워요'; }
-    else { const m=Math.min(...open.map(c=>cnt[c.id]||0)); pool=open.filter(c=>(cnt[c.id]||0)===m); why='내 기록이 가장 적은 캐릭터예요'; }
+    else {
+      const ch=open.filter(c=>CHANGED.has(c.id)), mc=ch.length?Math.min(...ch.map(c=>cnt[c.id]||0)):99;
+      if (mc<2){ pool=ch.filter(c=>(cnt[c.id]||0)===mc); why='새 버전에서 바뀐 캐릭터예요'; }
+      else { const m=Math.min(...open.map(c=>cnt[c.id]||0)); pool=open.filter(c=>(cnt[c.id]||0)===m); why='내 기록이 가장 적은 캐릭터예요'; }
+    }
     const pick=pool[Math.floor(Math.random()*pool.length)];
     return pick ? {id:pick.id, name:pick.name, rar:pick.rar, n:cnt[pick.id]||0, why} : null;
   }
@@ -6031,7 +6044,7 @@ requestAnimationFrame(tick);
   const f1=x=>isFinite(x)?x.toFixed(1):'—';
   const f2=x=>isFinite(x)?x.toFixed(2):'—';
   function render(){
-    { const key=(NICK||'')+'|'+games.filter(g=>nickOf(g)===(NICK||'\u0000') && g.ver===VER && !g.aborted).length; if (!REC || REC.key!==key){ REC=recommend(); if (REC) REC.key=key; } }
+    { const key=(NICK||'')+'|'+games.filter(g=>nickOf(g)===(NICK||'\u0000') && sameVer(g) && !g.aborted).length; if (!REC || REC.key!==key){ REC=recommend(); if (REC) REC.key=key; } }
     const st=$i('lxSt');
     const msg={wait:['wait','저장소 연결 중…'], load:['wait','기록 불러오는 중…'], slow:['wait','기록을 아직 못 불러왔어요. 잠시 뒤 다시 열어 보세요'], ok:['ok','저장소 연결됨 · 기록은 팀이 같이 쌓아요'], none:['bad','저장소를 쓸 수 없어 이 기기에만 저장해요 (JSON 복사로 보내 주세요)'], err:['bad','기록을 불러오지 못했어요. 새 판 기록은 그대로 저장을 시도해요']}[dbState];
     st.innerHTML=''; const d=document.createElement('span'); d.className='dot '+msg[0]; const t=document.createElement('span'); t.textContent=msg[1]+` · ${games.length}판`; st.append(d,t);
@@ -6042,7 +6055,7 @@ requestAnimationFrame(tick);
     const o0=document.createElement('option'); o0.value='__all'; o0.textContent=`전체 (${games.length}판)`; sel.appendChild(o0);
     for (const nm of names){ const o=document.createElement('option'); o.value=nm; o.textContent=`${nm} (${games.filter(g=>nickOf(g)===nm).length}판)`; sel.appendChild(o); }
     if (keep!=='__all' && !names.includes(keep)) who='__all'; sel.value=who;
-    const mine=games.filter(g=>nickOf(g)===(NICK||'\u0000') && g.ver===VER);
+    const mine=games.filter(g=>nickOf(g)===(NICK||'\u0000') && sameVer(g));
     const cnt={}; for (const g of mine) cnt[g.chr]=(cnt[g.chr]||0)+1;
     const pk=$i('lxPick'); pk.innerHTML='';
     let prevR=null;
