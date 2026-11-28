@@ -1294,7 +1294,7 @@ const CHARS = {
   poseidon: {name:'포세이돈',color:'#3FA9F5', seq:[2,2,0],     title:'해일!',  ab:'해일: 파란 블럭이 전부 가라앉아 아래쪽에 평평하게 깔림. 족보와 판에 파랑이 더 많이 등장'},
   restock:  {name:'재입고',  color:'#7ED9C6', seq:[],          title:'',      ab:'판을 꾹 누르면 잠시 뒤 모든 블럭 색이 무작위로 바뀜 (6초 쿨타임)', passive:true},
   colorblind:{name:'색약',   color:'#C9A27E', seq:[1],         title:'뒤섞임!',ab:'15초 동안 두 색을 같은 색으로 침'},
-  retro:    {name:'레트로',  color:'#D9D9D9', seq:[3,0,1,2,3], title:'흑백!',  ab:'12초 동안 흑백이 되는 대신 족보 점수 ×3'},
+  retro:    {name:'레트로',  color:'#D9D9D9', seq:[3,0,1,2,3], title:'흑백!',  ab:'15초 동안 흑백이 되는 대신 족보 점수 ×2'},
   // 10/11 2차 (팀원 테스트 파일)
   navigator:{name:'항해사',  color:'#6EC8FF', seq:[],          title:'',      ab:'판의 끝과 끝이 이어짐. 벽 밖으로 나가면 반대편에서 나오고, 매치도 판을 넘어 이어짐. 가장자리에서 매치하면 +3초, 그 매치로 완성한 족보 ×2', passive:true},
   twins:    {name:'쌍둥이',  color:'#FFB3C7', seq:[],          title:'',      ab:'족보에 같은 색이 이어지면 한 번에 모두 진행', passive:true},
@@ -3291,7 +3291,7 @@ const CTL = {
   painter:   [{prime:true, goal:'paintMatch', hint:p=>p.color===paintCol || p.color===chrNeed(), text:'칠해진 블럭(테두리)으로 ㅗ를 만들어 매치해 보세요'}],
   poseidon:  [{prime:true, goal:'blueMatch', hint:p=>p.color===BLUE, text:'아래쪽에 깔린 파랑으로 매치해 보세요'}],
   colorblind:[{fresh:true, prime:true, goal:'cbMix', hint:true, text:'같은 색으로 보이는 두 색을 섞어 ㅗ를 만들어 매치해 보세요. 문양은 그대로예요'}],
-  retro:     [{fresh:true, prime:true, setup:tCardsNear, goal:'retroDone', hint:'need', text:'흑백인 동안 족보를 완성하면 점수 ×3. 색 대신 문양을 보세요'}],
+  retro:     [{fresh:true, prime:true, setup:tCardsNear, goal:'retroDone', hint:'need', text:'흑백인 동안 족보를 완성하면 점수 ×2. 색 대신 문양을 보세요'}],
   architect: [{fresh:true, goal:'archDone', hint:'need', text:'한 칸 늘어난 족보를 완성하면 늘어난 점수를 그대로 받아요'}],
   runner:    [{fresh:true, prime:true, goal:'runMatch', hint:true, text:'시간이 멈춘 동안 9수 안에 매치하면 정지가 이어져요'}],
   zeus:      [{goal:'zeusEnd', pre:()=>!zeusOn(), text:'흡수한 노랑 수만큼 족보가 차요. 판에 노랑이 많을 때 발동할수록 많이 채워요'}],
@@ -3518,7 +3518,7 @@ const CT = {
   painter:   {cap:'칠하기', d:'지나온 길의 블럭 5개를 다음에 필요한 색으로 칠해요', on:{t:'board', x:'칠한 블럭으로 내 주변을 채워 매치'}},
   poseidon:  {cap:'해일', d:'파란 블럭이 전부 판 아래로 가라앉아요', on:{t:'board', x:'아래쪽에 파랑이 모여서 매치하기 쉬워요'}},
   colorblind:{cap:'색약', d:'10초 동안 두 색이 같은 색으로 취급돼요', on:{t:'board', x:'두 색이 하나가 됐어요. 문양은 그대로예요'}},
-  retro:     {cap:'흑백', d:'10초 동안 화면이 흑백, 대신 족보 점수 ×2', on:{t:'board', x:'색 대신 문양을 보고 매치하세요'}},
+  retro:     {cap:'흑백', d:'15초 동안 화면이 흑백, 대신 족보 점수 ×2', on:{t:'board', x:'색 대신 문양을 보고 매치하세요'}},
   architect: {cap:'증축', d:'가장 많이 진행된 족보에 한 칸을 덧붙여 점수를 키워요', on:{t:'cards', x:'족보가 길어졌어요. 길수록 점수가 커요'}},
   runner:    {cap:'묘수', d:'시간이 멈추고 8수 동안 움직일 수 있어요. 매치하면 다시 8수', on:{t:'chr', x:'남은 수 안에 매치하면 정지가 이어져요'}, ev:{runnerEnd:{t:'time', x:'정지가 끝나고 시간이 다시 흘러요'}}},
   zeus:      {cap:'낙뢰', d:'시간이 멈추고 노란 블럭을 전부 흡수해 그 수만큼 족보를 올려요', on:{t:'cards', x:'흡수한 노랑 수만큼 족보가 올라가요'}, ev:{zeusEnd:{t:'time', x:'시간이 다시 흘러요'}}},
@@ -4008,7 +4008,7 @@ function sewerClose(){
 
 /* ================= 10/11 신규 캐릭터 ================= */
 // 정비공 · 소매치기 · 화가 · 포세이돈 · 포탈 · 재입고 · 지휘자 · 색약 · 레트로 · 저주받은 자 (수치 임시, 밸런스 미조정)
-const CONDUCT = {dur:20, cost:0.5, x:1.5}, CB_DUR = 15, RETRO = {dur:12, x:3, ext:0, extMax:0},   /* 10/17: 족보 완성 연장 삭제 */ PORTAL_DUR = 8;
+const CONDUCT = {dur:20, cost:0.5, x:1.5}, CB_DUR = 15, RETRO = {dur:15, x:2, ext:0, extMax:0},   /* 10/17: 족보 완성 연장 삭제 */ PORTAL_DUR = 8;
 const CURSE = {t:1.3, x:1.5}, PAINT_N = 5, PAINT_MAX = 2, RESTOCK = {delay:1.2, cd:6}, PICK_R = 2;
 let paintCol=null, retroExt=0, paintCharges=0, conductUntil=0, cbUntil=0, cbPair=null, retroUntil=0, portalUntil=0, restockAt=0;
 const conductOn = () => started && elapsed<conductUntil;
@@ -5377,7 +5377,7 @@ const DETAIL = {
   poseidon: {fx:'다 자란 블럭 중 파란 블럭이 전부 아래쪽으로 가라앉아 평평하게 깔려요. 나머지 색은 위로 올라가고, 색 개수는 그대로예요.'},
   restock:  {fx:'항상 켜져 있어요. 판을 0.5초 꾹 누르면(키보드는 스페이스) 블럭이 1.2초 동안 돌다가 모든 색이 무작위로 바뀌어요. 도는 동안엔 움직일 수 없고 시간은 흘러요. 다시 쓰려면 6초 기다려야 해요.'},
   colorblind:{fx:'10초 동안 무작위 두 색을 같은 색으로 쳐요. 두 번째 색 블럭이 첫 번째 색으로 보이고 문양은 그대로 남아요. 매치와 족보 진행 모두 같은 색으로 쳐요.'},
-  retro:    {fx:'10초 동안 판과 족보가 흑백으로 바뀌어요. 블럭 문양으로만 구분해야 하는 대신 족보 점수 ×2.'},
+  retro:    {fx:'15초 동안 판과 족보가 흑백으로 바뀌어요. 블럭 문양으로만 구분해야 하는 대신 족보 점수 ×2.'},
   navigator:{fx:'항상 켜져 있어요. 벽 밖으로 나가면 반대편 끝에서 다시 나타나요. 매치 판정도 판을 넘어 이어져서, 가장자리에 서 있으면 반대편 끝 칸을 이웃으로 삼아 매치할 수 있어요.'},
   twins:    {fx:'항상 켜져 있어요. 족보에서 같은 색이 이어지면, 그 색 매치 한 번으로 이어진 칸이 모두 함께 진행돼요. 같은 색이 이어진 족보의 높은 점수는 그대로 받아요.'},
   bounty:   {fx:'항상 켜져 있어요. 10초마다 현상금 색이 바뀌고(직전 색과 다른 색), 현상금 색으로 매치하면 평소 시간에 2초가 더 붙어요. 현상금 색은 배경색과 캐릭터 칸 색 칩으로 보이고, 바뀌기 2초 전부터 배경이 깜빡여요.'},
@@ -5890,7 +5890,7 @@ requestAnimationFrame(tick);
 <button id="lxbtn" type="button" hidden>기록 패널</button>
 <script>
 (function(){
-  const VER='1128i';
+  const VER='1128j';
   // 기록 항목 설명 (시간 배율을 재는 캐릭터)
   const WHAT={none:'생각·이동 시간 기준', sewer:'끈 고리 그리기 · 고리 크기', marathon:'깃발 달리기 시간', vampire:'피의 시간(9초) 생각', photo:'사진(8초) 계획 입력', retro:'흑백(13초) 생각'};
   // 11/14 등급과 목표 (C 평균 = 1)
@@ -5902,7 +5902,7 @@ requestAnimationFrame(tick);
   const LOCK=new Set([]);
   const C_IDS=['gardener','clock','artisan','wall','alchemist'], C_PER_BASE=1.12;
   // 이 페이지 수치에서 예상 배율 (C=1): 재보정 시뮬 100판 × 두 시기 실제 기록 보정, 11/26 (ver 1127)
-  const SIMP={gardener:1.06,clock:1.12,artisan:0.98,wall:0.90,alchemist:0.95,twins:1.25,marathon:1.38,bounty:1.40,gambler:1.31,joker:1.30,navigator:1.47,explorer:1.40,sewer:1.28,bomber:1.75,fever:1.74,mirror:1.52,poseidon:1.79,colorblind:1.57,retro:1.7,architect:1.57,wanderer:1.64,seer:1.73,runner:1.57,zeus:2.05,photo:1.98,arson:1.99,madan:2.04,vampire:1.93};
+  const SIMP={gardener:1.06,clock:1.12,artisan:0.98,wall:0.90,alchemist:0.95,twins:1.25,marathon:1.38,bounty:1.40,gambler:1.31,joker:1.30,navigator:1.47,explorer:1.40,sewer:1.28,bomber:1.75,fever:1.74,mirror:1.52,poseidon:1.79,colorblind:1.57,retro:1.64,architect:1.57,wanderer:1.64,seer:1.73,runner:1.57,zeus:2.05,photo:1.98,arson:1.99,madan:2.04,vampire:1.93};
   const LX=[{id:'none', name:'기본', rar:'N', what:WHAT.none}];
   try{ for (const r of ['C','B','A','S']) for (const id of Object.keys(GRADE)) if (GRADE[id]===r && CHARS[id]) LX.push({id, name:CHARS[id].name, rar:r, what:WHAT[id]||'', lock:LOCK.has(id)}); }
   catch(e){ console.warn(e); }
@@ -6014,11 +6014,11 @@ requestAnimationFrame(tick);
   }
   // 추천: 이 닉네임으로 판 수가 가장 적은 캐릭터 (기준을 먼저 채움)
   // 지금 버전과 수치가 같은 예전 버전 (그 캐릭터 기록을 판 수로 같이 셈). 1120부터 지속형 능력 족보 잠금
-  const ALLV=['1114','1119','1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'], V20=['1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'], V21=['1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'];
-  const SAMEV={gardener:ALLV, artisan:ALLV, wall:ALLV, alchemist:ALLV, twins:ALLV, sewer:ALLV, bomber:[], architect:['1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'], seer:ALLV, madan:ALLV,
-    poseidon:['1119','1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'], mirror:['1114','1119','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'],
-    clock:V20, marathon:['1127b','1128g','1128h','1128i'], bounty:V20, joker:V20, explorer:V20, fever:['1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'], colorblind:['1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'], runner:V20, zeus:['1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'], photo:['1128c','1128d','1128e','1128f','1128g','1128h','1128i'], vampire:['1120','1121','1121b','1121c','1128h','1128i'],
-    gambler:['1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'], navigator:['1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i'], retro:['1128g','1128h','1128i'], wanderer:V21, arson:['1128g','1128h','1128i']};
+  const ALLV=['1114','1119','1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'], V20=['1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'], V21=['1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'];
+  const SAMEV={gardener:ALLV, artisan:ALLV, wall:ALLV, alchemist:ALLV, twins:ALLV, sewer:ALLV, bomber:['1128i','1128j'], architect:['1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'], seer:ALLV, madan:ALLV,
+    poseidon:['1119','1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'], mirror:['1114','1119','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'],
+    clock:V20, marathon:['1127b','1128g','1128h','1128i','1128j'], bounty:V20, joker:V20, explorer:V20, fever:['1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'], colorblind:['1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'], runner:V20, zeus:['1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'], photo:['1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'], vampire:['1120','1121','1121b','1121c','1128h','1128i','1128j'],
+    gambler:['1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'], navigator:['1127','1127b','1128','1128b','1128c','1128d','1128e','1128f','1128g','1128h','1128i','1128j'], retro:[], wanderer:V21, arson:['1128g','1128h','1128i','1128j']};
   const sameVer = g => g.ver===VER || (SAMEV[g.chr]||[]).includes(String(g.ver));
   // 이번 버전(1127)에서 바뀐 캐릭터 → C 기준을 채운 뒤 먼저 추천
   const CHANGED=new Set(['marathon','arson','bomber','photo','retro','colorblind','zeus','vampire']);   // 1128~1128c에서 바뀐 캐릭터
