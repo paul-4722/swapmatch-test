@@ -1281,7 +1281,7 @@ const CHARS = {
   bomber:   {name:'폭파범',  color:'#FF5A5A', seq:[0,0],     title:'점화!',  ab:'다음 매치 2번이 이어진 같은 색 블럭을 모두 연쇄 폭파. 연쇄로 터진 블럭 1개마다 가장 많이 완성된 족보 +1칸'},
   photo:    {name:'사진사',  color:'#F4F4F4', seq:[2,0,3,1], title:'찰칵!',  ab:'6초 동안 시간을 멈추고 움직임을 계획. 사진이 깨지면 계획대로 한 번에 실행, 그 사이 매치마다 보너스 2배 (250 → 500 → 1,000 → 2,000까지)'},
   // 팀원 신규 캐릭터 (9×9 원안을 7×7로, 색은 우리 팔레트로: 빨강 1 · 파랑 2 · 노랑 0 · 초록 3)
-  marathon: {name:'마라토너',color:'#7FB8FF', seq:[],          title:'',      ab:'네 모서리를 반시계로 돌기. 매치한 뒤 깃발에 닿으면 +2.25초', passive:true},
+  marathon: {name:'마라토너',color:'#7FB8FF', seq:[],          title:'',      ab:'네 모서리를 반시계로 돌기. 매치한 뒤 깃발에 닿으면 +2.5초', passive:true},
   sewer:    {name:'수선사',  color:'#2FCF74', seq:[3],         title:'바늘!',  ab:'6초 동안 끈(16칸)으로 영역을 감싸 시작점으로 돌아오면, 안에 있는 블럭 색으로 족보 진행'},
   mirror:   {name:'거울',    color:'#BFE0FF', seq:[],          title:'',      ab:'벽을 통과하면 거울세계(좌우 벽은 좌우반전, 위아래 벽은 상하반전). 족보를 뒤에서부터 채우고, 앞뒤가 만나 완성하면 ×2', passive:true},
   vampire:  {name:'뱀파이어',color:'#E0304A', seq:[1,1],     title:'피의 시간!', ab:'10초 동안 모든 블럭이 빨강, 리필 2.5배. 매치해도 시간은 안 늘어남. 족보는 짧은 것부터 차례로 채움'},
@@ -1332,7 +1332,7 @@ const rcOf = id => `var(--r${rarOf(id)})`;
 const MADAN = {shots:8, time:8, score:1000, regen:30, hitT:0};
 const DEVIL = {time:'시간 −8초', score:'점수 −1,000', regen:'재생 30초'};
 const VAMP = {dur:10, t:0};   // 10/17: 피의 시간 매치는 시간 없음 (이전 매치당 +1초)
-const MR_BONUS = 2.25, MR_NEED = 1, MR_CHAIN_GAP = 15, HOLD_MS = 500, HOLD_SHOW = 180;
+const MR_BONUS = 2.5, MR_NEED = 1, MR_CHAIN_GAP = 15, HOLD_MS = 500, HOLD_SHOW = 180;
 // 10/11 봇 밸런스 1차: 시계공 5→4초, 왕 15→10초, 사진사 10→7초(배율 +0.25→+0.4), 피버 족보 100→300점, 와일드 1→2회, 변성 4→5개
 const FEVER_DUR = 12, FREEZE_DUR = 2, KING_DUR = 10, BOMB_N = 2, PHOTO_DUR = 6;
 // 10/17 폭파범: 연쇄 폭파 간격(첫 칸 → 칸마다 가속 → 최소)
@@ -3300,7 +3300,7 @@ const CTL = {
   wall:      [{rows:['.AAA.','..P..','.....','.....','.....'], at:()=>[0,winO()], goal:'wall',
                marks:o=>({ctr:[o[0],o[1]+2], slots:[[o[0],o[1]+1],[o[0],o[1]+3],[o[0]+1,o[1]+2]], arrow:0}), text:'벽 쪽 칸에서는 3방향만 같은 색이면 매치돼요. 벽으로 올라가 보세요'},
               {fresh:true, goal:'wall', text:'벽 매치로 얻는 시간은 절반이에요. 판 가장자리를 돌며 한 번 더'}],
-  marathon:  [{goal:'flag', hint:true, text:'매치를 한 번 하면 깃발이 금색으로 빛나요. 그 모서리 칸에 들어가면 +2.25초'}],
+  marathon:  [{goal:'flag', hint:true, text:'매치를 한 번 하면 깃발이 금색으로 빛나요. 그 모서리 칸에 들어가면 +2.5초'}],
   bounty:    [{goal:'bounty', hint:p=>p.color===bountyCol, text:'배경색이 현상금 색이에요. 그 색으로 매치하면 +2초'}],
   navigator: [{goal:'wrap', text:'벽 밖으로 움직이면 반대편 끝에서 나와요. 넘어가 보세요'}],
   explorer:  [{goal:'zone', hint:p=>inZone(...planCenter(p)), text:'점선 3×3 구역 안에서 매치하면 진행된 족보가 세 칸 더 올라가요'}],
@@ -3525,7 +3525,7 @@ const CT = {
   seer:      {cap:'예언', d:'자랄 씨앗 색이 보여요. 발동하면 판의 같은 색 ㅗ 모양을 모두 매치해요', on:{t:'cards', x:'매치한 모양 수만큼 족보가 올라갔어요'}},
   // 상시형
   wall:      {cap:'벽 타기', d:'벽에 붙어 있으면 3방향만 같은 색이어도 매치돼요', t:'board', ev:{wall:{t:'player', x:'벽 옆에서 3칸만으로 매치!'}}},
-  marathon:  {cap:'깃발', d:'매치한 뒤 깃발을 밟으면 +2.25초. 깃발은 네 모서리를 돌아요', t:'.wp', ev:{flag:{t:'time', x:'깃발을 밟아 +2.25초'}}},
+  marathon:  {cap:'깃발', d:'매치한 뒤 깃발을 밟으면 +2.5초. 깃발은 네 모서리를 돌아요', t:'.wp', ev:{flag:{t:'time', x:'깃발을 밟아 +2.5초'}}},
   bounty:    {cap:'현상금', d:'배경색과 같은 색을 매치하면 +2초. 색은 10초마다 바뀌어요', t:'chr', ev:{bounty:{t:'time', x:'현상금 색을 잡아 +2초'}}},
   navigator: {cap:'항해', d:'판의 끝과 끝이 이어져 있어요', t:'board', ev:{wrap:{t:'player', x:'벽을 넘어 반대편으로 나왔어요'}}},
   explorer:  {cap:'탐험', d:'빛나는 구역 안에서 매치하면 진행된 족보가 한 칸 더 올라가요', t:'#zone', ev:{zone:{t:'cards', x:'구역 보너스로 한 칸 더!'}}},
@@ -5358,7 +5358,7 @@ const DETAIL = {
   none:     {fx:'능력이 없어요. 기본 규칙만으로 플레이해요.', when:'규칙을 익히거나 순수한 실력을 재 보고 싶을 때', tip:'어떤 캐릭터든 결국 내 주변 4칸 맞추기와 족보 순서 맞추기가 기본이에요.'},
   gardener: {fx:'판에서 자라고 있는 씨앗(빈칸)이 전부 즉시 다 자란 블럭이 돼요.', when:'매치를 연달아 해서 빈칸이 많이 쌓였을 때', tip:'빈칸이 6개 이상일 때 발동하면 이득이 커요. 리필이 느린 판 초반에 특히 강해요.'},
   wall:     {fx:'항상 켜져 있어요. 벽에 붙은 칸에서는 벽 쪽 한 방향을 빼고 3방향만 같은 색이어도 매치돼요(얻는 시간은 절반). 연속으로 벽 매치를 해도 돼요.', when:'판 가장자리를 돌면서 플레이할 때', tip:'모서리 칸에서는 매치되지 않아요. 벽 바로 옆 줄을 주 무대로 쓰세요.'},
-  marathon: {fx:'항상 켜져 있어요. 깃발이 왼쪽 위 → 왼쪽 아래 → 오른쪽 아래 → 오른쪽 위 순서로 옮겨 가요. 직전 깃발 이후 매치를 한 번 이상 하고 깃발 칸에 들어가면 시간 +2.25초.', when:'판 전체를 크게 돌면서 플레이할 때', tip:'깃발이 금색으로 빛나면 준비 완료예요. 가는 길에 매치를 끼워 넣으세요.'},
+  marathon: {fx:'항상 켜져 있어요. 깃발이 왼쪽 위 → 왼쪽 아래 → 오른쪽 아래 → 오른쪽 위 순서로 옮겨 가요. 직전 깃발 이후 매치를 한 번 이상 하고 깃발 칸에 들어가면 시간 +2.5초.', when:'판 전체를 크게 돌면서 플레이할 때', tip:'깃발이 금색으로 빛나면 준비 완료예요. 가는 길에 매치를 끼워 넣으세요.'},
   sewer:    {fx:'발동하면 3초 동안 끈이 따라와요. 끈 길이는 12칸(2×2 영역을 감쌀 수 있는 길이)이에요. 시작한 칸으로 돌아와 폐곡선을 만들면, 안에 있는 블럭이 뽑히며 매치 1회로 치고, 그 색들로 족보가 진행돼요. 색 순서는 상관없고, 점수가 높은 족보에 가장 유리한 순서로 들어가요. 시간이 지나거나 끈이 다 되면 실패. 끈이 있는 동안엔 캐릭터 족보가 멈춰요.', when:'필요한 색이 몇 칸 안에 모여 있을 때', tip:'2×2 블럭을 한 바퀴 돌면 4개를 한 번에 뽑아요.'},
   gambler:  {fx:'다음에 완성하는 족보 점수가 ×2. 한 번에 여러 족보를 완성하면 전부 ×2이고, 연속으로 발동하면 기회가 쌓여요(최대 2번).', when:'4칸 족보(1,000점)가 거의 찼을 때', tip:'×2가 켜진 동안 짧은 족보를 먼저 깨지 않도록 순서를 조절하세요.'},
   clock:    {fx:'4초 동안 남은 시간이 줄지 않아요. 리필은 그대로 진행돼요.', when:'족보 완성까지 멀리 돌아가야 할 때', tip:'정지 중엔 시간 걱정 없이 4칸 족보를 노려 보세요. 연속 발동하면 시간이 이어 붙어요.'},
@@ -5890,7 +5890,7 @@ requestAnimationFrame(tick);
 <button id="lxbtn" type="button" hidden>기록 패널</button>
 <script>
 (function(){
-  const VER='1128c';
+  const VER='1128d';
   // 기록 항목 설명 (시간 배율을 재는 캐릭터)
   const WHAT={none:'생각·이동 시간 기준', sewer:'끈 고리 그리기 · 고리 크기', marathon:'깃발 달리기 시간', vampire:'피의 시간(9초) 생각', photo:'사진(8초) 계획 입력', retro:'흑백(13초) 생각'};
   // 11/14 등급과 목표 (C 평균 = 1)
@@ -5902,7 +5902,7 @@ requestAnimationFrame(tick);
   const LOCK=new Set([]);
   const C_IDS=['gardener','clock','artisan','wall','alchemist'], C_PER_BASE=1.12;
   // 이 페이지 수치에서 예상 배율 (C=1): 재보정 시뮬 100판 × 두 시기 실제 기록 보정, 11/26 (ver 1127)
-  const SIMP={gardener:1.06,clock:1.12,artisan:0.98,wall:0.90,alchemist:0.95,twins:1.25,marathon:1.33,bounty:1.40,gambler:1.31,joker:1.30,navigator:1.47,explorer:1.40,sewer:1.28,bomber:1.41,fever:1.74,mirror:1.52,poseidon:1.79,colorblind:1.57,retro:1.61,architect:1.57,wanderer:1.64,seer:1.73,runner:1.57,zeus:2.05,photo:1.98,arson:2.02,madan:2.04,vampire:2.04};
+  const SIMP={gardener:1.06,clock:1.12,artisan:0.98,wall:0.90,alchemist:0.95,twins:1.25,marathon:1.65,bounty:1.40,gambler:1.31,joker:1.30,navigator:1.47,explorer:1.40,sewer:1.28,bomber:1.41,fever:1.74,mirror:1.52,poseidon:1.79,colorblind:1.57,retro:1.61,architect:1.57,wanderer:1.64,seer:1.73,runner:1.57,zeus:2.05,photo:1.98,arson:2.02,madan:2.04,vampire:2.04};
   const LX=[{id:'none', name:'기본', rar:'N', what:WHAT.none}];
   try{ for (const r of ['C','B','A','S']) for (const id of Object.keys(GRADE)) if (GRADE[id]===r && CHARS[id]) LX.push({id, name:CHARS[id].name, rar:r, what:WHAT[id]||'', lock:LOCK.has(id)}); }
   catch(e){ console.warn(e); }
@@ -6014,11 +6014,11 @@ requestAnimationFrame(tick);
   }
   // 추천: 이 닉네임으로 판 수가 가장 적은 캐릭터 (기준을 먼저 채움)
   // 지금 버전과 수치가 같은 예전 버전 (그 캐릭터 기록을 판 수로 같이 셈). 1120부터 지속형 능력 족보 잠금
-  const ALLV=['1114','1119','1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c'], V20=['1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c'], V21=['1121','1121b','1121c','1127','1127b','1128','1128b','1128c'];
-  const SAMEV={gardener:ALLV, artisan:ALLV, wall:ALLV, alchemist:ALLV, twins:ALLV, sewer:ALLV, bomber:[], architect:['1127','1127b','1128','1128b','1128c'], seer:ALLV, madan:ALLV,
-    poseidon:['1119','1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c'], mirror:['1114','1119','1121','1121b','1121c','1127','1127b','1128','1128b','1128c'],
-    clock:V20, marathon:[], bounty:V20, joker:V20, explorer:V20, fever:['1127','1127b','1128','1128b','1128c'], colorblind:['1128','1128b'], runner:V20, zeus:['1128b'], photo:[], vampire:['1127','1127b','1128','1128b','1128c'],
-    gambler:['1127','1127b','1128','1128b','1128c'], navigator:['1127','1127b','1128','1128b','1128c'], retro:[], wanderer:V21, arson:[]};
+  const ALLV=['1114','1119','1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d'], V20=['1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d'], V21=['1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d'];
+  const SAMEV={gardener:ALLV, artisan:ALLV, wall:ALLV, alchemist:ALLV, twins:ALLV, sewer:ALLV, bomber:['1128c'], architect:['1127','1127b','1128','1128b','1128c','1128d'], seer:ALLV, madan:ALLV,
+    poseidon:['1119','1120','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d'], mirror:['1114','1119','1121','1121b','1121c','1127','1127b','1128','1128b','1128c','1128d'],
+    clock:V20, marathon:[], bounty:V20, joker:V20, explorer:V20, fever:['1127','1127b','1128','1128b','1128c','1128d'], colorblind:['1128','1128b','1128c'], runner:V20, zeus:['1128b','1128c'], photo:['1128c'], vampire:['1127','1127b','1128','1128b','1128c','1128d'],
+    gambler:['1127','1127b','1128','1128b','1128c','1128d'], navigator:['1127','1127b','1128','1128b','1128c','1128d'], retro:['1128c'], wanderer:V21, arson:['1128c']};
   const sameVer = g => g.ver===VER || (SAMEV[g.chr]||[]).includes(String(g.ver));
   // 이번 버전(1127)에서 바뀐 캐릭터 → C 기준을 채운 뒤 먼저 추천
   const CHANGED=new Set(['marathon','arson','bomber','photo','retro','colorblind','zeus']);   // 1128~1128c에서 바뀐 캐릭터
